@@ -14,7 +14,34 @@ import os
 import sys
 
 import matplotlib.pyplot as plt
+from matplotlib import font_manager
 import pandas as pd
+
+# 按平台常见字体顺序尝试，保证标题/图例中文能正常显示
+_CJK_FONT_CANDIDATES = (
+    "PingFang SC",
+    "Heiti SC",
+    "STHeiti",
+    "Songti SC",
+    "Kaiti SC",
+    "Lantinghei SC",
+    "Arial Unicode MS",
+    "Microsoft YaHei",
+    "SimHei",
+    "Noto Sans CJK SC",
+    "WenQuanYi Micro Hei",
+)
+
+
+def setup_matplotlib_chinese() -> str | None:
+    """为 matplotlib 选用本机可用的中文字体，并修复负号显示为方块的问题。"""
+    available = {f.name for f in font_manager.fontManager.ttflist}
+    for name in _CJK_FONT_CANDIDATES:
+        if name in available:
+            plt.rcParams["font.sans-serif"] = [name, "DejaVu Sans"]
+            plt.rcParams["axes.unicode_minus"] = False
+            return name
+    return None
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
@@ -98,6 +125,10 @@ def main():
     result.insert(0, "timestamps", y_timestamp.values)
     result.to_csv(out_csv, index=False)
     print(f"✅ 已保存：{out_csv}")
+
+    font_name = setup_matplotlib_chinese()
+    if font_name is None:
+        print("⚠️ 未找到中文字体，图表中文可能显示为方框")
 
     fig, ax = plt.subplots(figsize=(12, 5))
     ax.plot(hist["timestamps"], hist["close"], label="历史收盘", color="#2563eb")
