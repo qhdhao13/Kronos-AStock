@@ -46,6 +46,8 @@
 > Kronos is the **first open-source foundation model** for financial candlesticks (K-lines), 
 > trained on data from over **45 global exchanges**.
 
+> **🇨🇳 本分支（A 股中文版）**：在官方仓库基础上增加了 [中文 Web UI](./webui/README.zh-CN.md)、A 股数据下载、[000338 微调与预测](./docs/000338使用指南.md)。详见 **[README.zh-CN.md](./README.zh-CN.md)** · 上游：[shiyu-coder/Kronos](https://github.com/shiyu-coder/Kronos)
+
 
 </div>
 

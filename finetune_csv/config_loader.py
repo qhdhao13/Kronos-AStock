@@ -173,6 +173,7 @@ class CustomFinetuneConfig:
         
         device_config = self.loader.get_device_config()
         self.use_cuda = device_config.get('use_cuda', True)
+        self.use_mps = device_config.get('use_mps', False)
         self.device_id = device_config.get('device_id', 0)
         
         distributed_config = self.loader.get_distributed_config()

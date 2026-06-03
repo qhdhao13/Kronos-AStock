@@ -54,6 +54,20 @@ Desktop.ini
 *.pt
 *.ckpt
 *.bin
+*.safetensors
+
+# Fine-tuned model outputs (run scripts/finetune_000338.sh locally)
+finetune_csv/finetuned/
+
+# Web UI runtime artifacts
+webui/prediction_results/
+
+# Training logs
+finetune_csv/finetuned/**/*.log
+**/train.log
+
+# Prediction outputs (regenerate with examples/predict_000338_finetuned.py)
+examples/outputs/
 
 # Logs
 *.log

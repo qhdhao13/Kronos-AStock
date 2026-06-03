@@ -1,0 +1,49 @@
+# 潍柴动力 000338 日 K 前复权微调配置
+# 数据：data/000338_daily_qfq.csv（约 4500+ 根日 K）
+
+data:
+  data_path: "../data/000338_daily_qfq.csv"
+  lookback_window: 400
+  predict_window: 120
+  max_context: 512
+  clip: 5.0
+  train_ratio: 0.85
+  val_ratio: 0.15
+  test_ratio: 0.0
+
+training:
+  tokenizer_epochs: 20
+  basemodel_epochs: 15
+  batch_size: 16
+  log_interval: 20
+  num_workers: 0
+  seed: 42
+  tokenizer_learning_rate: 0.0002
+  predictor_learning_rate: 0.000001
+  adam_beta1: 0.9
+  adam_beta2: 0.95
+  adam_weight_decay: 0.1
+  accumulation_steps: 1
+
+model_paths:
+  pretrained_tokenizer: "NeoQuasar/Kronos-Tokenizer-base"
+  pretrained_predictor: "NeoQuasar/Kronos-small"
+  exp_name: "000338_daily_qfq"
+  base_path: "./finetuned"
+  base_save_path: ""
+  finetuned_tokenizer: ""
+  tokenizer_save_name: "tokenizer"
+  basemodel_save_name: "basemodel"
+
+experiment:
+  name: "kronos_000338_daily"
+  description: "Fine-tune Kronos-small on Weichai Power 000338 daily qfq K-lines"
+  use_comet: false
+  train_tokenizer: true
+  train_basemodel: true
+  skip_existing: false
+
+device:
+  use_cuda: false
+  use_mps: true
+  device_id: 0

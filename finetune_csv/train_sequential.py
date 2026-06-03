@@ -30,6 +30,8 @@ class SequentialTrainer:
         if self.config.use_cuda and torch.cuda.is_available():
             torch.cuda.set_device(self.local_rank)
             device = torch.device(f"cuda:{self.local_rank}")
+        elif getattr(self.config, 'use_mps', False) and hasattr(torch.backends, 'mps') and torch.backends.mps.is_available():
+            device = torch.device("mps")
         else:
             device = torch.device("cpu")
         

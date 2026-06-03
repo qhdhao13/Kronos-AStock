@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kronos Financial Prediction Web UI</title>
+    <title>Kronos 金融预测 Web UI</title>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-locale-zh-cn-latest.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <style>
         * {
@@ -14,7 +15,7 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'PingFang SC', 'Microsoft YaHei', 'Segoe UI', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             color: #333;
@@ -244,10 +245,36 @@
 
         .time-window-info {
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
+            gap: 6px;
             margin-bottom: 15px;
-            font-size: 12px;
+            font-size: 13px;
             color: #666;
+            line-height: 1.5;
+            word-break: break-word;
+        }
+
+        .time-window-info-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 16px;
+            align-items: center;
+        }
+
+        .time-window-latest-btn {
+            align-self: flex-start;
+            padding: 4px 10px;
+            font-size: 12px;
+            border: 1px solid #667eea;
+            background: #fff;
+            color: #667eea;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .time-window-latest-btn:hover {
+            background: #667eea;
+            color: #fff;
         }
 
         .time-window-slider {
@@ -423,6 +450,91 @@
             color: #0f2027;
         }
 
+        /* 分析结论区域 */
+        .conclusion-section {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border: 1px solid #7dd3fc;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .conclusion-section h3 {
+            color: #0c4a6e;
+            margin-bottom: 12px;
+            font-size: 1.1rem;
+        }
+
+        .conclusion-summary {
+            background: white;
+            border-left: 4px solid #0284c7;
+            padding: 12px 16px;
+            margin-bottom: 14px;
+            border-radius: 0 6px 6px 0;
+            font-size: 15px;
+            font-weight: 600;
+            color: #0f172a;
+            line-height: 1.6;
+        }
+
+        .conclusion-points {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 14px 0;
+        }
+
+        .conclusion-points li {
+            position: relative;
+            padding: 8px 0 8px 20px;
+            color: #334155;
+            font-size: 14px;
+            line-height: 1.5;
+            border-bottom: 1px dashed #bae6fd;
+        }
+
+        .conclusion-points li:last-child {
+            border-bottom: none;
+        }
+
+        .conclusion-points li::before {
+            content: '•';
+            position: absolute;
+            left: 4px;
+            color: #0284c7;
+            font-weight: bold;
+        }
+
+        .conclusion-disclaimer {
+            font-size: 12px;
+            color: #64748b;
+            padding-top: 8px;
+            border-top: 1px solid #bae6fd;
+        }
+
+        .conclusion-trend {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-left: 6px;
+        }
+
+        .conclusion-trend.bullish {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .conclusion-trend.bearish {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .conclusion-trend.neutral {
+            background: #fef9c3;
+            color: #854d0e;
+        }
+
         @media (max-width: 768px) {
             .main-content {
                 grid-template-columns: 1fr;
@@ -441,79 +553,110 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🚀 Kronos Financial Prediction Web UI</h1>
-            <p>AI-based financial K-line data prediction analysis platform</p>
+            <h1>🚀 Kronos 金融预测 Web UI</h1>
+            <p>基于 AI 的 K 线数据预测与分析平台</p>
         </div>
 
         <div class="main-content">
             <div class="control-panel">
-                <h2>🎯 Control Panel</h2>
+                <h2>🎯 控制面板</h2>
 
                 <!-- Model Selection -->
                 <div class="form-group">
-                    <label for="model-select">Select Model:</label>
+                    <label for="model-select">选择模型：</label>
                     <select id="model-select">
-                        <option value="">Please load available models first</option>
+                        <option value="">请先加载可用模型列表</option>
                     </select>
-                    <small class="form-text">Select the Kronos model to use</small>
+                    <small class="form-text">选择要使用的 Kronos 模型</small>
                 </div>
 
                 <!-- Device Selection -->
                 <div class="form-group">
-                    <label for="device-select">Select Device:</label>
+                    <label for="device-select">运行设备：</label>
                     <select id="device-select">
-                        <option value="cpu">CPU</option>
-                        <option value="cuda">CUDA (NVIDIA GPU)</option>
-                        <option value="mps">MPS (Apple Silicon)</option>
+                        <option value="cpu">CPU（通用）</option>
+                        <option value="cuda">CUDA（NVIDIA 显卡）</option>
+                        <option value="mps">MPS（Apple Silicon 芯片）</option>
                     </select>
-                    <small class="form-text">Select the device to run the model on</small>
+                    <small class="form-text">选择模型运行的计算设备</small>
                 </div>
 
                 <!-- Model Status -->
                 <div id="model-status" class="status info" style="display: none;">
-                    Model status information
+                    模型状态信息
                 </div>
 
                 <!-- Load Model Button -->
                 <button id="load-model-btn" class="btn btn-secondary">
-                    🔄 Load Model
+                    🔄 加载模型
+                </button>
+
+                <hr style="margin: 20px 0; border: 1px solid #e2e8f0;">
+
+                <!-- 在线获取 A 股数据 -->
+                <div class="form-group">
+                    <label for="stock-code-input">A 股代码下载：</label>
+                    <input type="text" id="stock-code-input" placeholder="例如 000338、600519" maxlength="6" inputmode="numeric">
+                    <small class="form-text">输入 6 位代码，自动下载 K 线到 data 目录（无需手动找 CSV）</small>
+                </div>
+                <div class="form-group">
+                    <label for="stock-period-select">K 线周期：</label>
+                    <select id="stock-period-select">
+                        <option value="daily" selected>日 K（推荐，历史更长）</option>
+                        <option value="5min">5 分钟 K</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="stock-adjust-select">复权方式：</label>
+                    <select id="stock-adjust-select">
+                        <option value="qfq" selected>前复权（推荐）</option>
+                        <option value="hfq">后复权</option>
+                        <option value="none">不复权</option>
+                    </select>
+                </div>
+                <button id="fetch-stock-btn" class="btn btn-warning">
+                    📥 下载并更新数据
                 </button>
 
                 <hr style="margin: 20px 0; border: 1px solid #e2e8f0;">
 
                 <!-- Data File Selection -->
                 <div class="form-group">
-                    <label for="data-file-select">Select Data File:</label>
+                    <label for="data-file-select">选择数据文件：</label>
                     <select id="data-file-select">
-                        <option value="">Please load data file list first</option>
+                        <option value="">请先加载数据文件列表</option>
                     </select>
-                    <small class="form-text">Select K-line data file from data directory</small>
+                    <small class="form-text">从 data 目录选择 K 线 CSV 文件</small>
                 </div>
 
                 <button id="load-data-btn" class="btn btn-secondary">
-                    📁 Load Data
+                    📁 加载数据
                 </button>
 
                 <!-- Data Information Display -->
                 <div id="data-info" class="data-info" style="display: none;">
-                    <h3>📊 Data Information</h3>
-                    <p><strong>Rows:</strong> <span id="data-rows">-</span></p>
-                    <p><strong>Columns:</strong> <span id="data-cols">-</span></p>
-                    <p><strong>Time Range:</strong> <span id="data-time-range">-</span></p>
-                    <p><strong>Price Range:</strong> <span id="data-price-range">-</span></p>
-                    <p><strong>Time Frequency:</strong> <span id="data-timeframe">-</span></p>
-                    <p><strong>Prediction Columns:</strong> <span id="data-prediction-cols">-</span></p>
+                    <h3>📊 数据信息</h3>
+                    <p><strong>行数：</strong> <span id="data-rows">-</span></p>
+                    <p><strong>列数：</strong> <span id="data-cols">-</span></p>
+                    <p><strong>时间范围：</strong> <span id="data-time-range">-</span></p>
+                    <p><strong>价格区间：</strong> <span id="data-price-range">-</span></p>
+                    <p><strong>时间频率：</strong> <span id="data-timeframe">-</span></p>
+                    <p><strong>预测字段：</strong> <span id="data-prediction-cols">-</span></p>
                 </div>
 
                 <hr style="margin: 20px 0; border: 1px solid #e2e8f0;">
 
                 <!-- Time Window Selector -->
                 <div class="time-window-container">
-                    <h3>⏰ Time Window Selection</h3>
+                    <h3>⏰ 时间窗口选择</h3>
                     <div class="time-window-info">
-                        <span id="window-start">Start: --</span>
-                        <span id="window-end">End: --</span>
-                        <span id="window-size">Window Size: 400+120=520 data points</span>
+                        <div class="time-window-info-row">
+                            <span id="window-range">窗口：--</span>
+                        </div>
+                        <div class="time-window-info-row">
+                            <span id="window-detail">输入 400 根 + 对比 120 根</span>
+                            <button type="button" id="window-latest-btn" class="time-window-latest-btn">对齐最新数据</button>
+                        </div>
                     </div>
                     
                     <div class="time-window-slider">
@@ -523,104 +666,114 @@
                             <div class="slider-handle end-handle" id="end-handle"></div>
                         </div>
                         <div class="slider-labels">
-                            <span id="min-label">Earliest</span>
-                            <span id="max-label">Latest</span>
+                            <span id="min-label">最早</span>
+                            <span id="max-label">最新</span>
                         </div>
                     </div>
                     
-                    <small class="form-text">Drag slider to select time window position for 520 data points, green area represents fixed 400+120 data point range</small>
+                    <small class="form-text">拖动滑块选择 520 根 K 线的时间窗口（默认对齐最新数据）；绿色区域为 400 根输入 + 120 根对比</small>
                 </div>
 
                 <!-- Prediction Parameters -->
                 <div class="form-group">
-                    <label for="lookback">Lookback Window Size:</label>
+                    <label for="lookback">回看窗口：</label>
                     <input type="number" id="lookback" value="400" readonly>
-                    <small class="form-text">Fixed at 400 data points</small>
+                    <small class="form-text">固定 400 根 K 线（模型输入）</small>
                 </div>
 
                 <div class="form-group">
-                    <label for="pred-len">Prediction Length:</label>
+                    <label for="pred-len">预测长度：</label>
                     <input type="number" id="pred-len" value="120" readonly>
-                    <small class="form-text">Fixed at 120 data points</small>
+                    <small class="form-text">固定 120 根 K 线（预测/对比段）</small>
                 </div>
 
                 <!-- Prediction Quality Parameters -->
                 <div class="form-group">
-                    <label for="temperature">Prediction Temperature (T):</label>
+                    <label for="temperature">预测温度 (T)：</label>
                     <input type="range" id="temperature" value="1.0" min="0.1" max="2.0" step="0.1">
                     <span id="temperature-value">1.0</span>
-                    <small class="form-text">Controls prediction randomness, higher values make predictions more diverse, lower values make predictions more conservative</small>
+                    <small class="form-text">控制随机性：越高越发散，越低越保守</small>
                 </div>
 
                 <div class="form-group">
-                    <label for="top-p">Nucleus Sampling Parameter (top_p):</label>
+                    <label for="top-p">核采样参数 (top_p)：</label>
                     <input type="range" id="top-p" value="0.9" min="0.1" max="1.0" step="0.1">
                     <span id="top-p-value">0.9</span>
-                    <small class="form-text">Controls prediction diversity, higher values consider broader probability distributions</small>
+                    <small class="form-text">控制多样性：越高考虑更多概率分布</small>
                 </div>
 
                 <div class="form-group">
-                    <label for="sample-count">Sample Count:</label>
+                    <label for="sample-count">采样次数：</label>
                     <input type="number" id="sample-count" value="1" min="1" max="5" step="1">
-                    <small class="form-text">Generate multiple prediction samples to improve quality (recommended 1-3)</small>
+                    <small class="form-text">生成多条样本再平均，可提升稳定性（建议 1～3）</small>
                 </div>
 
                 <button id="predict-btn" class="btn btn-success" disabled>
-                    🔮 Start Prediction
+                    🔮 开始预测
                 </button>
 
                 <!-- Loading Status -->
                 <div id="loading" class="loading">
                     <div class="spinner"></div>
-                    <p>Processing, please wait...</p>
+                    <p>正在处理，请稍候...</p>
                 </div>
             </div>
 
             <div class="chart-container">
-                <h2>📈 Prediction Results Chart</h2>
+                <h2>📈 预测结果图表</h2>
                 <div id="chart"></div>
+
+                <!-- 分析结论 -->
+                <div id="conclusion-section" class="conclusion-section" style="display: none;">
+                    <h3>📝 分析结论</h3>
+                    <div id="conclusion-summary" class="conclusion-summary">-</div>
+                    <ul id="conclusion-points" class="conclusion-points"></ul>
+                    <div id="conclusion-disclaimer" class="conclusion-disclaimer"></div>
+                </div>
                 
                 <!-- Comparison Analysis -->
                 <div id="comparison-section" class="comparison-section" style="display: none;">
-                    <h3>📊 Prediction vs Actual Data Comparison</h3>
+                    <h3>📊 预测 vs 真实数据对比</h3>
                     <div id="comparison-info" class="comparison-info">
-                        <p><strong>Prediction Type:</strong> <span id="prediction-type">-</span></p>
-                        <p><strong>Comparison Data:</strong> <span id="comparison-data">-</span></p>
+                        <p><strong>数据文件：</strong> <span id="window-file-name">-</span></p>
+                        <p><strong>预测类型：</strong> <span id="prediction-type">-</span></p>
+                        <p><strong>对比区间：</strong> <span id="window-compare-range">-</span></p>
+                        <p><strong>对比数据：</strong> <span id="comparison-data">-</span></p>
                     </div>
                     
                     <div class="error-stats">
                         <div class="error-stat">
-                            <h4>Mean Absolute Error</h4>
+                            <h4>平均绝对误差 (MAE)</h4>
                             <div class="value" id="mae">-</div>
-                            <div class="unit">Price Units</div>
+                            <div class="unit">价格单位</div>
                         </div>
                         <div class="error-stat">
-                            <h4>Root Mean Square Error</h4>
+                            <h4>均方根误差 (RMSE)</h4>
                             <div class="value" id="rmse">-</div>
-                            <div class="unit">Price Units</div>
+                            <div class="unit">价格单位</div>
                         </div>
                         <div class="error-stat">
-                            <h4>Mean Absolute Percentage Error</h4>
+                            <h4>平均绝对百分比误差 (MAPE)</h4>
                             <div class="value" id="mape">-</div>
                             <div class="unit">%</div>
                         </div>
                     </div>
                     
                     <div class="error-details">
-                        <h4>Detailed Comparison Data:</h4>
+                        <h4>详细对比数据：</h4>
                         <div style="max-height: 300px; overflow-y: auto;">
                             <table class="comparison-table">
                                 <thead>
                                     <tr>
-                                        <th>Time</th>
-                                        <th>Actual Open</th>
-                                        <th>Predicted Open</th>
-                                        <th>Actual High</th>
-                                        <th>Predicted High</th>
-                                        <th>Actual Low</th>
-                                        <th>Predicted Low</th>
-                                        <th>Actual Close</th>
-                                        <th>Predicted Close</th>
+                                        <th>时间</th>
+                                        <th>真实开盘</th>
+                                        <th>预测开盘</th>
+                                        <th>真实最高</th>
+                                        <th>预测最高</th>
+                                        <th>真实最低</th>
+                                        <th>预测最低</th>
+                                        <th>真实收盘</th>
+                                        <th>预测收盘</th>
                                     </tr>
                                 </thead>
                                 <tbody id="comparison-tbody">
@@ -674,18 +827,18 @@
                     console.log('✅ Available models loaded successfully:', availableModels);
                 } else {
                     console.warn('⚠️ Kronos model library not available');
-                    showStatus('warning', 'Kronos model library not available, will use simulated prediction');
+                    showStatus('warning', 'Kronos 模型库不可用，将使用模拟预测');
                 }
             } catch (error) {
                 console.error('❌ Failed to load available models:', error);
-                showStatus('error', 'Failed to load available models');
+                showStatus('error', '加载可用模型列表失败');
             }
         }
 
         // Populate model selection dropdown
         function populateModelSelect() {
             const modelSelect = document.getElementById('model-select');
-            modelSelect.innerHTML = '<option value="">Please select model</option>';
+            modelSelect.innerHTML = '<option value="">请选择模型</option>';
             
             Object.entries(availableModels).forEach(([key, model]) => {
                 const option = document.createElement('option');
@@ -701,7 +854,7 @@
             const device = document.getElementById('device-select').value;
             
             if (!modelKey) {
-                showStatus('error', 'Please select a model to load');
+                showStatus('error', '请选择要加载的模型');
                 return;
             }
             
@@ -725,7 +878,7 @@
                 }
             } catch (error) {
                 console.error('❌ Model loading failed:', error);
-                showStatus('error', `Model loading failed: ${error.response?.data?.error || error.message}`);
+                showStatus('error', `模型加载失败：${error.response?.data?.error || error.message}`);
             } finally {
                 showLoading(false);
                 document.getElementById('load-model-btn').disabled = false;
@@ -739,11 +892,11 @@
                 const status = response.data;
                 
                 if (status.loaded) {
-                    showStatus('success', `Model loaded: ${status.current_model.name} on ${status.current_model.device}`);
+                    showStatus('success', `模型已加载：${status.current_model.name}，设备 ${status.current_model.device}`);
                 } else if (status.available) {
-                    showStatus('info', 'Model available but not loaded');
+                    showStatus('info', '模型可用，尚未加载');
                 } else {
-                    showStatus('warning', 'Model library not available');
+                    showStatus('warning', '模型库不可用');
                 }
             } catch (error) {
                 console.error('❌ Failed to get model status:', error);
@@ -751,13 +904,13 @@
         }
 
         // Load data file list
-        async function loadDataFiles() {
+        async function loadDataFiles(selectPath = null) {
             try {
                 const response = await axios.get('/api/data-files');
                 const dataFiles = response.data;
                 
                 const dataFileSelect = document.getElementById('data-file-select');
-                dataFileSelect.innerHTML = '<option value="">Please select data file</option>';
+                dataFileSelect.innerHTML = '<option value="">请选择数据文件</option>';
                 
                 dataFiles.forEach(file => {
                     const option = document.createElement('option');
@@ -765,11 +918,54 @@
                     option.textContent = `${file.name} (${file.size})`;
                     dataFileSelect.appendChild(option);
                 });
+
+                if (selectPath) {
+                    dataFileSelect.value = selectPath;
+                }
                 
                 console.log('✅ Data file list loaded successfully:', dataFiles);
+                return dataFiles;
             } catch (error) {
                 console.error('❌ Failed to load data file list:', error);
-                showStatus('error', 'Failed to load data file list');
+                showStatus('error', '加载数据文件列表失败');
+                return [];
+            }
+        }
+
+        // 根据股票代码在线下载 K 线
+        async function fetchStockData() {
+            const symbol = document.getElementById('stock-code-input').value.trim();
+            const period = document.getElementById('stock-period-select').value;
+            const adjust = document.getElementById('stock-adjust-select').value;
+
+            if (!/^\d{6}$/.test(symbol)) {
+                showStatus('error', '请输入 6 位 A 股代码，例如 000338');
+                return;
+            }
+
+            try {
+                showLoading(true);
+                document.getElementById('fetch-stock-btn').disabled = true;
+
+                const response = await axios.post('/api/fetch-stock', {
+                    symbol,
+                    period,
+                    adjust,
+                });
+
+                if (response.data.success) {
+                    showStatus('success', response.data.message);
+                    await loadDataFiles(response.data.file.path);
+                    document.getElementById('data-file-select').value = response.data.file.path;
+                } else {
+                    showStatus('error', response.data.error);
+                }
+            } catch (error) {
+                console.error('❌ 下载股票数据失败:', error);
+                showStatus('error', `下载失败：${error.response?.data?.error || error.message}`);
+            } finally {
+                showLoading(false);
+                document.getElementById('fetch-stock-btn').disabled = false;
             }
         }
 
@@ -778,7 +974,7 @@
             const filePath = document.getElementById('data-file-select').value;
             
             if (!filePath) {
-                showStatus('error', 'Please select a data file to load');
+                showStatus('error', '请选择要加载的数据文件');
                 return;
             }
             
@@ -807,7 +1003,7 @@
                 }
             } catch (error) {
                 console.error('❌ Data loading failed:', error);
-                showStatus('error', `Data loading failed: ${error.response?.data?.error || error.message}`);
+                showStatus('error', `数据加载失败：${error.response?.data?.error || error.message}`);
             } finally {
                 showLoading(false);
                 document.getElementById('load-data-btn').disabled = false;
@@ -819,7 +1015,7 @@
             document.getElementById('data-info').style.display = 'block';
             document.getElementById('data-rows').textContent = dataInfo.rows;
             document.getElementById('data-cols').textContent = dataInfo.columns.length;
-            document.getElementById('data-time-range').textContent = `${dataInfo.start_date} to ${dataInfo.end_date}`;
+            document.getElementById('data-time-range').textContent = `${dataInfo.start_date} 至 ${dataInfo.end_date}`;
             document.getElementById('data-price-range').textContent = `${dataInfo.price_range.min.toFixed(4)} - ${dataInfo.price_range.max.toFixed(4)}`;
             document.getElementById('data-timeframe').textContent = dataInfo.timeframe;
             document.getElementById('data-prediction-cols').textContent = dataInfo.prediction_columns.join(', ');
@@ -832,6 +1028,31 @@
         let sliderData = null;
         let isDragging = false;
         let currentHandle = null;
+
+        // 根据滑块位置计算窗口行号（修复：不能把轨道百分比直接乘以 maxStartRow）
+        function computeWindowRows() {
+            const lookback = 400;
+            const predLen = 120;
+            const windowSize = lookback + predLen;
+            const totalRows = sliderData ? sliderData.totalRows : 0;
+            const maxStartRow = Math.max(0, totalRows - windowSize);
+            const windowPercentage = totalRows > 0 ? windowSize / totalRows : 1;
+
+            const startHandle = document.getElementById('start-handle');
+            const startPct = parseFloat(startHandle.style.left) / 100;
+            const trackSpan = Math.max(1e-9, 1 - windowPercentage);
+            const normalized = Math.min(1, Math.max(0, startPct / trackSpan));
+            const startRow = Math.round(normalized * maxStartRow);
+            const endRow = startRow + windowSize - 1;
+
+            return { lookback, predLen, windowSize, totalRows, maxStartRow, startRow, endRow };
+        }
+
+        // 将窗口移动到最新 520 根 K 线
+        function alignWindowToLatest() {
+            if (!sliderData) return;
+            updateSliderFromInputs();
+        }
 
         // Initialize time window slider
         function initializeTimeSlider() {
@@ -953,32 +1174,27 @@
 
         // Update slider display based on handle positions
         function updateSliderFromHandles() {
-            const startHandle = document.getElementById('start-handle');
-            const endHandle = document.getElementById('end-handle');
-            
-            const startPercentage = parseFloat(startHandle.style.left) / 100;
-            const endPercentage = parseFloat(endHandle.style.left) / 100;
-            
             if (!sliderData) return;
-            
-            // Calculate selected time range
-            const totalTime = sliderData.endDate.getTime() - sliderData.startDate.getTime();
-            const startTime = sliderData.startDate.getTime() + (totalTime * startPercentage);
-            const endTime = sliderData.startDate.getTime() + (totalTime * endPercentage);
-            
-            const startDate = new Date(startTime);
-            const endDate = new Date(endTime);
-            
-            // Update display information
-            document.getElementById('window-start').textContent = `Start: ${startDate.toLocaleDateString()}`;
-            document.getElementById('window-end').textContent = `End: ${endDate.toLocaleDateString()}`;
-            
-            // Display fixed window size
-            document.getElementById('window-size').textContent = `Window Size: 400 + 120 = 520 data points (fixed)`;
-            
-            // Input field values remain fixed
-            document.getElementById('lookback').value = 400;
-            document.getElementById('pred-len').value = 120;
+
+            const { lookback, predLen, windowSize, startRow, endRow } = computeWindowRows();
+
+            let startLabel = '';
+            let endLabel = '';
+            if (sliderData.timestamps && sliderData.timestamps.length > endRow) {
+                startLabel = sliderData.timestamps[startRow];
+                endLabel = sliderData.timestamps[endRow];
+            } else {
+                startLabel = sliderData.startDate.toLocaleDateString('zh-CN');
+                endLabel = sliderData.endDate.toLocaleDateString('zh-CN');
+            }
+
+            document.getElementById('window-range').textContent =
+                `窗口：${startLabel} ～ ${endLabel}（第 ${startRow + 1}～${endRow + 1} 根，共 ${windowSize} 根）`;
+            document.getElementById('window-detail').textContent =
+                `其中前 ${lookback} 根为模型输入，后 ${predLen} 根用于预测对比`;
+
+            document.getElementById('lookback').value = lookback;
+            document.getElementById('pred-len').value = predLen;
         }
 
         // Update slider based on input fields
@@ -995,13 +1211,14 @@
             
             if (windowSize > totalRows) {
                 // If window size exceeds total data amount, show error
-                showStatus('error', `Insufficient data, need at least ${windowSize} data points, currently only ${totalRows} available`);
+                showStatus('error', `数据不足，至少需要 ${windowSize} 根 K 线，当前仅有 ${totalRows} 根`);
                 return;
             }
             
-            // Calculate slider position (default select first half of data)
-            const startPercentage = 0.1; // Start from 10%
-            const endPercentage = startPercentage + (windowSize / totalRows);
+            // 默认对齐最新数据：520 根 K 线窗口右端贴齐数据末尾
+            const windowPercentage = windowSize / totalRows;
+            const endPercentage = 1.0;
+            const startPercentage = Math.max(0, endPercentage - windowPercentage);
             
             // Update handle positions
             updateStartHandle(startPercentage);
@@ -1017,7 +1234,9 @@
                 startDate: new Date(dataInfo.start_date),
                 endDate: new Date(dataInfo.end_date),
                 totalRows: dataInfo.rows,
-                timeframe: dataInfo.timeframe
+                timeframe: dataInfo.timeframe,
+                timestamps: dataInfo.timestamps || [],
+                fileName: dataInfo.file_name || ''
             };
             
             // Set slider labels
@@ -1031,12 +1250,12 @@
         // Start prediction
         async function startPrediction() {
             if (!currentDataFile) {
-                showStatus('error', 'Please load data file first');
+                showStatus('error', '请先加载数据文件');
                 return;
             }
             
             if (!modelLoaded) {
-                showStatus('error', 'Please load model first');
+                showStatus('error', '请先加载模型');
                 return;
             }
             
@@ -1047,19 +1266,12 @@
                 const lookback = parseInt(document.getElementById('lookback').value);
                 const predLen = parseInt(document.getElementById('pred-len').value);
                 
-                // Get selected time range from time window slider
-                const startHandle = document.getElementById('start-handle');
-                const startPercentage = parseFloat(startHandle.style.left) / 100;
-                
                 if (!sliderData) {
-                    showStatus('error', 'Time window slider not initialized');
+                    showStatus('error', '时间窗口滑块未初始化');
                     return;
                 }
-                
-                // Calculate selected time range
-                const totalTime = sliderData.endDate.getTime() - sliderData.startDate.getTime();
-                const startTime = sliderData.startDate.getTime() + (totalTime * startPercentage);
-                const startDate = new Date(startTime);
+
+                const { startRow, windowSize } = computeWindowRows();
                 
                 // Get prediction quality parameters
                 const temperature = parseFloat(document.getElementById('temperature').value);
@@ -1070,7 +1282,7 @@
                     file_path: currentDataFile,
                     lookback: lookback,
                     pred_len: predLen,
-                    start_date: startDate.toISOString().slice(0, 16), // Format as YYYY-MM-DDTHH:MM
+                    start_row: startRow,
                     temperature: temperature,
                     top_p: topP,
                     sample_count: sampleCount
@@ -1089,18 +1301,33 @@
                 }
             } catch (error) {
                 console.error('❌ Prediction failed:', error);
-                showStatus('error', `Prediction failed: ${error.response?.data?.error || error.message}`);
+                showStatus('error', `预测失败：${error.response?.data?.error || error.message}`);
             } finally {
                 showLoading(false);
                 document.getElementById('predict-btn').disabled = false;
             }
         }
 
+        // Plotly 图表配置：中文工具栏提示 + 响应式
+        const plotlyConfig = {
+            locale: 'zh-CN',
+            responsive: true,
+            displaylogo: false,
+            modeBarButtonsToRemove: ['lasso2d', 'select2d'],
+        };
+
         // Display prediction results
         function displayPredictionResult(result) {
             // Display chart
             const chartData = JSON.parse(result.chart);
-            Plotly.newPlot('chart', chartData.data, chartData.layout);
+            Plotly.newPlot('chart', chartData.data, chartData.layout, plotlyConfig);
+
+            // 展示分析结论
+            if (result.analysis_conclusion) {
+                displayAnalysisConclusion(result.analysis_conclusion);
+            } else {
+                document.getElementById('conclusion-section').style.display = 'none';
+            }
             
             // Display comparison analysis (if actual data exists)
             if (result.has_comparison) {
@@ -1110,13 +1337,45 @@
             }
         }
 
+        // 展示分析结论
+        function displayAnalysisConclusion(conclusion) {
+            const section = document.getElementById('conclusion-section');
+            const summaryEl = document.getElementById('conclusion-summary');
+            const pointsEl = document.getElementById('conclusion-points');
+            const disclaimerEl = document.getElementById('conclusion-disclaimer');
+
+            section.style.display = 'block';
+
+            const trend = conclusion.metrics?.trend || '震荡';
+            const trendClass = trend === '偏多' ? 'bullish' : (trend === '偏空' ? 'bearish' : 'neutral');
+            summaryEl.innerHTML = `${conclusion.summary}<span class="conclusion-trend ${trendClass}">${trend}</span>`;
+
+            pointsEl.innerHTML = '';
+            (conclusion.points || []).forEach(point => {
+                const li = document.createElement('li');
+                li.textContent = point;
+                pointsEl.appendChild(li);
+            });
+
+            disclaimerEl.textContent = conclusion.disclaimer || '';
+        }
+
         // Display comparison analysis
         function displayComparisonAnalysis(result) {
             document.getElementById('comparison-section').style.display = 'block';
             
-            // Update comparison information
             document.getElementById('prediction-type').textContent = result.prediction_type;
-            document.getElementById('comparison-data').textContent = `${result.actual_data.length} actual data points`;
+            document.getElementById('comparison-data').textContent = `${result.actual_data.length} 个真实数据点`;
+
+            if (result.window_info) {
+                const w = result.window_info;
+                document.getElementById('window-file-name').textContent = w.file_name || '-';
+                document.getElementById('window-compare-range').textContent =
+                    `${w.compare_start.split('T')[0]} ～ ${w.compare_end.split('T')[0]}（输入段至 ${w.input_end.split('T')[0]}）`;
+            } else {
+                document.getElementById('window-file-name').textContent = '-';
+                document.getElementById('window-compare-range').textContent = '-';
+            }
             
             // Calculate error statistics
             const errorStats = getPredictionQuality(result.prediction_results, result.actual_data);
@@ -1172,7 +1431,7 @@
                 
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td>${new Date(pred.timestamp).toLocaleString()}</td>
+                    <td>${new Date(pred.timestamp).toLocaleString('zh-CN')}</td>
                     <td>${act.open.toFixed(4)}</td>
                     <td>${pred.open.toFixed(4)}</td>
                     <td>${act.high.toFixed(4)}</td>
@@ -1193,9 +1452,14 @@
             
             // Load data button
             document.getElementById('load-data-btn').addEventListener('click', loadData);
+
+            // 下载 A 股数据
+            document.getElementById('fetch-stock-btn').addEventListener('click', fetchStockData);
             
             // Prediction button
             document.getElementById('predict-btn').addEventListener('click', startPrediction);
+
+            document.getElementById('window-latest-btn').addEventListener('click', alignWindowToLatest);
             
             // Prediction quality parameter sliders
             document.getElementById('temperature').addEventListener('input', function() {
