@@ -26,24 +26,13 @@ CSV文件必须包含以下列：
 | 2019/11/26 9:40 | 184.35215 | 183.85215 | 184.55215 | 183.45215 | 4433300 | 0 |
 | 2019/11/26 9:45 | 183.85215 | 183.35215 | 183.95215 | 182.95215 | 3070900 | 0 |
 
-> **标准数据样例**:  `data/HK_ali_09988_kline_5min_all.csv` 
+> **本仓库示例数据**: `data/000338_daily_qfq.csv`（潍柴动力日 K 前复权）
 
-## 2. 准备config文件
+## 2. 准备 config 文件
 
-data_path及预训练模型路径需要修改，训练参数可以自己调节
+data_path 及预训练模型路径需要修改，训练参数可以自己调节。可直接参考：
 
-```yaml
-# 数据配置
-data:
-  data_path: "/path/to/your/data.csv"
-  lookback_window: 512        # 要使用的历史数据点
-  predict_window: 48           # 要预测的未来点数
-  max_context: 512            # 最大上下文长度
-
-...
-
-```
-这里还有其他一些设置， `configs/config_ali09988_candle-5min.yaml` 有更详细的注释。
+`configs/config_000338_daily_qfq.yaml`
 
 ## 3. 训练
 
@@ -53,16 +42,16 @@ data:
 
 ```bash
 # 完整训练（tokenizer + predictor）
-python train_sequential.py --config configs/config_ali09988_candle-5min.yaml
+python train_sequential.py --config configs/config_000338_daily_qfq.yaml
 
 # 跳过已存在的模型
-python train_sequential.py --config configs/config_ali09988_candle-5min.yaml --skip-existing
+python train_sequential.py --config configs/config_000338_daily_qfq.yaml --skip-existing
 
 # 只训练tokenizer
-python train_sequential.py --config configs/config_ali09988_candle-5min.yaml --skip-basemodel
+python train_sequential.py --config configs/config_000338_daily_qfq.yaml --skip-basemodel
 
 # 只训练predictor
-python train_sequential.py --config configs/config_ali09988_candle-5min.yaml --skip-tokenizer
+python train_sequential.py --config configs/config_000338_daily_qfq.yaml --skip-tokenizer
 ```
 
 ### 方法2: 单独组件训练
@@ -71,10 +60,10 @@ python train_sequential.py --config configs/config_ali09988_candle-5min.yaml --s
 
 ```bash
 # 步骤1: 训练tokenizer
-python finetune_tokenizer.py --config configs/config_ali09988_candle-5min.yaml
+python finetune_tokenizer.py --config configs/config_000338_daily_qfq.yaml
 
 # 步骤2: 训练predictor（需要微调后的tokenizer）
-python finetune_base_model.py --config configs/config_ali09988_candle-5min.yaml
+python finetune_base_model.py --config configs/config_000338_daily_qfq.yaml
 ```
 
 ### DDP训练
@@ -84,7 +73,7 @@ python finetune_base_model.py --config configs/config_ali09988_candle-5min.yaml
 ```bash
 # 设置通信后端（NVIDIA GPU用nccl，CPU/混合用gloo）
 DIST_BACKEND=nccl \
-torchrun --standalone --nproc_per_node=8 train_sequential.py --config configs/config_ali09988_candle-5min.yaml
+torchrun --standalone --nproc_per_node=8 train_sequential.py --config configs/config_000338_daily_qfq.yaml
 ```
 
 ## 4. 训练结果
@@ -100,19 +89,14 @@ torchrun --standalone --nproc_per_node=8 train_sequential.py --config configs/co
 - **日志文件**: 详细日志保存到 `{base_save_path}/logs/`
 - **验证跟踪**: 基于验证损失保存最佳模型
 
-## 5. 预测可视化
+## 5. 预测
 
-以下图像显示了kronos在阿里巴巴股票数据上微调后的示例训练结果：
+微调完成后运行：
 
-![训练结果 1](examples/HK_ali_09988_kline_5min_all_historical_20250919_073929.png)
+```bash
+python examples/predict_000338_finetuned.py
+```
 
-![训练结果 2](examples/HK_ali_09988_kline_5min_all_historical_20250919_073944.png)
-
-![训练结果 3](examples/HK_ali_09988_kline_5min_all_historical_20250919_074012.png)
-
-![训练结果 4](examples/HK_ali_09988_kline_5min_all_historical_20250919_074042.png)
-
-![训练结果 5](examples/HK_ali_09988_kline_5min_all_historical_20250919_074251.png)
-
+输出保存在 `examples/outputs/`。
 
 

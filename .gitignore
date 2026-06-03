@@ -32,7 +32,6 @@ MANIFEST
 
 # macOS
 .DS_Store
-.AppleDouble
 .LSOverride
 
 # Windows
@@ -60,14 +59,16 @@ Desktop.ini
 finetune_csv/finetuned/
 
 # Web UI runtime artifacts
-webui/prediction_results/
+webui/prediction_results/*
+!webui/prediction_results/.gitkeep
 
 # Training logs
 finetune_csv/finetuned/**/*.log
 **/train.log
 
 # Prediction outputs (regenerate with examples/predict_000338_finetuned.py)
-examples/outputs/
+examples/outputs/*
+!examples/outputs/.gitkeep
 
 # Logs
 *.log

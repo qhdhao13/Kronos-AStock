@@ -48,18 +48,10 @@
 ### 3. 前瞻预测（`examples/`）
 
 ```bash
-python examples/predict_000338_finetuned.py              # 本地权重优先
-python examples/predict_000338_finetuned.py --from-hub     # 从 Hugging Face 下载
+python examples/predict_000338_finetuned.py
 ```
 
-**Hugging Face 公开权重（免本地微调）：**
-
-| 组件 | 链接 |
-|------|------|
-| Tokenizer | [qhdhao13/Kronos-000338-Tokenizer](https://huggingface.co/qhdhao13/Kronos-000338-Tokenizer) |
-| Predictor | [qhdhao13/Kronos-000338-small](https://huggingface.co/qhdhao13/Kronos-000338-small) |
-
-输出未来 120 根 K 线 CSV 与趋势图。
+需先完成本地微调（`bash scripts/finetune_000338.sh`）。输出未来 120 根 K 线 CSV 与趋势图。
 
 ---
 
@@ -93,7 +85,7 @@ python app.py
 
 1. Web UI 下载 `000338` 日 K 前复权 → `data/000338_daily_qfq.csv`
 2. Web UI 回测：滑块「对齐最新数据」→ 加载 Kronos-small → 开始预测
-3. **二选一**：本地微调 `bash scripts/finetune_000338.sh`，或直接用 HF 权重 `--from-hub`
+3. **二选一**：本地微调 `bash scripts/finetune_000338.sh`（约 2 小时）
 4. 前瞻：`python examples/predict_000338_finetuned.py`
 
 ---
@@ -118,7 +110,7 @@ python app.py
 | 方式 | 工具 | 模型 | 用途 |
 |------|------|------|------|
 | **回测对比** | Web UI | 预训练 Kronos-small | 看模型在历史 120 天上准不准 |
-| **前瞻预测** | `predict_000338_finetuned.py` | 本地或 [HF 微调权重](https://huggingface.co/qhdhao13/Kronos-000338-small) | 从最新价往后猜 120 个交易日 |
+| **前瞻预测** | `predict_000338_finetuned.py` | 本地微调模型 | 从最新价往后猜 120 个交易日 |
 
 **⚠️ 免责声明**：所有预测仅供学习研究，不构成投资建议。
 
